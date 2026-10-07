@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Management System | DBMS DA-2 Implementation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🏋️</div>
+        <div class="brand-text">
+          <h1>PULSEFIT GYM</h1>
+          <span>DBMS DA-2 SYSTEM</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <div class="nav-section-title">Overview</div>
+        <a class="nav-item active" data-tab="dashboard">
+          <span class="icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+
+        <div class="nav-section-title">Database Tables (DA-1)</div>
+        <a class="nav-item" data-tab="equipment">
+          <span class="icon">🏋️</span>
+          <span>Equipment</span>
+          <span class="nav-badge" id="badge-equipment">5</span>
+        </a>
+        <a class="nav-item" data-tab="member">
+          <span class="icon">👥</span>
+          <span>Members</span>
+          <span class="nav-badge" id="badge-member">5</span>
+        </a>
+        <a class="nav-item" data-tab="trainer">
+          <span class="icon">🧑‍🏫</span>
+          <span>Trainers</span>
+          <span class="nav-badge" id="badge-trainer">3</span>
+        </a>
+        <a class="nav-item" data-tab="maintenance">
+          <span class="icon">🔧</span>
+          <span>Maintenance</span>
+          <span class="nav-badge" id="badge-maintenance">3</span>
+        </a>
+        <a class="nav-item" data-tab="usage">
+          <span class="icon">⏱️</span>
+          <span>Equipment Usage</span>
+          <span class="nav-badge" id="badge-usage">5</span>
+        </a>
+        <a class="nav-item" data-tab="payment">
+          <span class="icon">💳</span>
+          <span>Payments</span>
+          <span class="nav-badge" id="badge-payment">3</span>
+        </a>
+
+        <div class="nav-section-title">Query Lab & Academic Report</div>
+        <a class="nav-item" data-tab="queries">
+          <span class="icon">⚡</span>
+          <span>10 SQL Queries</span>
+        </a>
+        <a class="nav-item" data-tab="console">
+          <span class="icon">💻</span>
+          <span>SQL Console</span>
+        </a>
+        <a class="nav-item" data-tab="report">
+          <span class="icon">📄</span>
+          <span>DA-2 Report</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="db-status">
+          <div class="status-dot"></div>
+          <span>SQLite Native DB: <strong>Online</strong></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-wrapper">
+      
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="page-header-info">
+          <h2 id="current-tab-title">Dashboard Overview</h2>
+          <p id="current-tab-desc">High-level operational stats & quick summary of gym database</p>
+        </div>
+
+        <div class="top-actions">
+          <button class="btn btn-secondary" id="btn-reset-db" title="Restore original records from DA-1">
+            <span>🔄</span> Reset to DA1 Data
+          </button>
+          <button class="btn btn-primary" id="btn-add-record" style="display: none;">
+            <span>➕</span> Add Record
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT BODY -->
+      <main class="content-body">
+
+        <!-- 1. DASHBOARD TAB -->
+        <section class="tab-pane active" id="tab-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card emerald">
+              <div class="stat-content">
+                <h4>Total Members</h4>
+                <div class="stat-number" id="stat-members">--</div>
+              </div>
+              <div class="stat-icon">👥</div>
+            </div>
+
+            <div class="stat-card cyan">
+              <div class="stat-content">
+                <h4>Total Equipments</h4>
+                <div class="stat-number" id="stat-equipment">--</div>
+              </div>
+              <div class="stat-icon">🏋️</div>
+            </div>
+
+            <div class="stat-card amber">
+              <div class="stat-content">
+                <h4>In Maintenance</h4>
+                <div class="stat-number" id="stat-maintenance">--</div>
+              </div>
+              <div class="stat-icon">🛠️</div>
+            </div>
+
+            <div class="stat-card blue">
+              <div class="stat-content">
+                <h4>Active Trainers</h4>
+                <div class="stat-number" id="stat-trainers">--</div>
+              </div>
+              <div class="stat-icon">🧑‍🏫</div>
+            </div>
+
+            <div class="stat-card purple">
+              <div class="stat-content">
+                <h4>Total Revenue</h4>
+                <div class="stat-number" id="stat-revenue">₹0</div>
+              </div>
+              <div class="stat-icon">💰</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>⚡ Quick Actions & System Info</h3>
+                <span class="badge badge-info">DA-2 Evaluator Ready</span>
+              </div>
+            </div>
+            <div style="padding: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+              <div style="background: rgba(255,255,255,0.02); padding: 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h4 style="color: var(--accent-emerald); margin-bottom: 8px;">📋 Full CRUD Capabilities</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                  Select any table from the sidebar (Equipment, Member, Trainer, Maintenance, Usage, Payment) to view, search, insert, update, or delete records in real-time.
+                </p>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); padding: 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h4 style="color: var(--accent-cyan); margin-bottom: 8px;">🎯 10 Essential DBMS Queries</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                  Explore queries using <strong>JOIN</strong> (2-way, 4-way), <strong>GROUP BY</strong>, <strong>HAVING</strong>, <strong>SUBQUERY</strong>, <strong>CASE</strong> statements, and pre-built <strong>VIEW</strong>.
+                </p>
+              </div>
+
+              <div style="background: rgba(255,255,255,0.02); padding: 18px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h4 style="color: var(--accent-amber); margin-bottom: 8px;">📑 Relational Integrity (DA-1)</h4>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                  All 6 tables are strictly in <strong>BCNF</strong> with foreign key enforcement (<code style="color: #38bdf8;">PRAGMA foreign_keys = ON</code>) and automatic triggers.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Member View Section -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>👥 Recent Registered Members</h3>
+              </div>
+              <button class="btn btn-outline" onclick="navigateToTab('member')">Manage All Members →</button>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="dashboard-members-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Membership</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. GENERIC TABLE VIEW TAB (Dynamic for Equipment, Member, Trainer, Maintenance, Usage, Payment) -->
+        <section class="tab-pane" id="tab-table-view">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3 id="table-display-name">Table Records</h3>
+                <span class="badge badge-neutral" id="table-record-count">0 Records</span>
+              </div>
+              <div class="card-toolbar">
+                <div class="search-input-wrap">
+                  <span class="search-icon">🔍</span>
+                  <input type="text" class="search-input" id="table-search-input" placeholder="Search rows...">
+                </div>
+              </div>
+            </div>
+
+            <div class="table-container">
+              <table class="data-table" id="active-data-table">
+                <thead id="active-table-head">
+                  <!-- Generated dynamically -->
+                </thead>
+                <tbody id="active-table-body">
+                  <!-- Generated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. 10 SQL QUERIES TAB -->
+        <section class="tab-pane" id="tab-queries">
+          <div style="margin-bottom: 20px;">
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+              These 10 queries address practical business questions for our Gym Management System, implementing Joins, Group By, Subqueries, Having, Views, and Conditional expressions.
+            </p>
+          </div>
+          <div id="queries-container">
+            <!-- Dynamically populated 10 query cards -->
+          </div>
+        </section>
+
+        <!-- 4. SQL CONSOLE TAB -->
+        <section class="tab-pane" id="tab-console">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>💻 Interactive SQL Query Console</h3>
+                <span class="badge badge-cyan">Execute Live Queries</span>
+              </div>
+              <div class="card-toolbar">
+                <button class="btn btn-secondary" onclick="loadSampleQueryIntoConsole()">Load Sample Query</button>
+                <button class="btn btn-primary" id="btn-run-console-query">
+                  <span>▶️</span> Run SQL Query
+                </button>
+              </div>
+            </div>
+            <div style="padding: 20px;">
+              <textarea class="sql-editor" id="custom-sql-input" placeholder="Type any valid SQL statement here (e.g. SELECT * FROM Member WHERE Age > 20)...">SELECT * FROM View_Member_Summary;</textarea>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">
+                💡 Tip: You can query tables: <code>Equipment</code>, <code>Member</code>, <code>Trainer</code>, <code>Maintenance</code>, <code>Equipment_Usage</code>, <code>Payment</code>, or the view <code>View_Member_Summary</code>.
+              </div>
+            </div>
+          </div>
+
+          <div class="card" id="console-result-card" style="display: none;">
+            <div class="card-header">
+              <div class="card-title">
+                <h3>Execution Result</h3>
+                <span class="badge badge-success" id="console-result-meta">0 Rows returned</span>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="data-table" id="console-result-table">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. DA-2 ACADEMIC REPORT TAB -->
+        <section class="tab-pane" id="tab-report">
+          <div class="report-paper" id="printable-report">
+            <div style="text-align: center; border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 25px;">
+              <h1>FITNESS CLUB & GYM MANAGEMENT SYSTEM</h1>
+              <h3 style="color: var(--accent-cyan); font-weight: 600;">DIGITAL ASSIGNMENT 2 (DA-2) REPORT</h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 6px;">Course: Database Management Systems | Submission Deadline: October 11</p>
+            </div>
+
+            <h2>1. System Overview & Problem Statement</h2>
+            <p>
+              The Gym Management System is designed to manage day-to-day operations of a modern fitness facility. It provides comprehensive tracking of gym equipment inventory, regular equipment maintenance scheduling, member registrations and subscriptions, personal trainer assignments, daily machine utilization sessions, and financial fee collections.
+            </p>
+
+            <h2>2. Relational Schema & Normalization (Referenced from DA-1)</h2>
+            <p>
+              As established during DA-1, the database schema comprises 6 primary relations that satisfy Boyce-Codd Normal Form (BCNF), avoiding update, deletion, and insertion anomalies:
+            </p>
+            <ul>
+              <li><strong>Equipment</strong> (<u>Equipment_ID</u>, Equipment_Name, Category, Brand, Purchase_Date, Condition, Status)</li>
+              <li><strong>Member</strong> (<u>Member_ID</u>, Member_Name, Age, Gender, Phone, Membership_Type)</li>
+              <li><strong>Trainer</strong> (<u>Trainer_ID</u>, Trainer_Name, Phone, Specialization, Experience)</li>
+              <li><strong>Maintenance</strong> (<u>Maintenance_ID</u>, <em>Equipment_ID</em>, Maintenance_Date, Technician_Name, Cost, Remarks)</li>
+              <li><strong>Equipment_Usage</strong> (<u>Usage_ID</u>, <em>Member_ID</em>, <em>Equipment_ID</em>, <em>Trainer_ID</em>, Usage_Date, Duration)</li>
+              <li><strong>Payment</strong> (<u>Payment_ID</u>, <em>Member_ID</em>, Amount, Payment_Date, Payment_Mode, Payment_Status)</li>
+            </ul>
+
+            <h2>3. Table Definitions (DDL) & Integrity Constraints</h2>
+            <p>Tables feature Primary Keys (PK), Foreign Keys (FK) with cascading updates and deletions, and constraint checks:</p>
+            <pre><code>-- Example DDL with Foreign Key Constraint
+CREATE TABLE Maintenance (
+    Maintenance_ID VARCHAR(20) PRIMARY KEY,
+    Equipment_ID VARCHAR(20) NOT NULL,
+    Maintenance_Date VARCHAR(20) NOT NULL,
+    Technician_Name VARCHAR(100) NOT NULL,
+    Cost DECIMAL(10, 2) NOT NULL,
+    Remarks VARCHAR(255),
+    FOREIGN KEY (Equipment_ID) REFERENCES Equipment(Equipment_ID)
+);</code></pre>
+
+            <h2>4. Implementation of 10 Specific SQL Queries</h2>
+            <p>
+              Below is the academic catalog of the 10 queries executed against the live system, demonstrating advanced relational algebra operations:
+            </p>
+            
+            <div id="report-queries-list">
+              <!-- Populated via script -->
+            </div>
+
+            <h2>5. PL/SQL Implementation (Triggers, Procedures & Cursors)</h2>
+            <h3>5.1 Trigger for Automatic Equipment Maintenance State</h3>
+            <pre><code>CREATE OR REPLACE TRIGGER trg_equipment_status_sync
+AFTER INSERT ON Maintenance
+FOR EACH ROW
+BEGIN
+    UPDATE Equipment
+    SET Status = 'Maintenance'
+    WHERE Equipment_ID = :NEW.Equipment_ID;
+END;</code></pre>
+
+            <h3>5.2 Stored Procedure for Safe Maintenance Logging</h3>
+            <pre><code>CREATE OR REPLACE PROCEDURE sp_RecordMaintenance (
+    p_maint_id IN VARCHAR2, p_equip_id IN VARCHAR2,
+    p_date IN VARCHAR2, p_tech IN VARCHAR2,
+    p_cost IN NUMBER, p_remarks IN VARCHAR2
+) AS
+BEGIN
+    INSERT INTO Maintenance VALUES (p_maint_id, p_equip_id, p_date, p_tech, p_cost, p_remarks);
+    UPDATE Equipment SET Status = 'Maintenance' WHERE Equipment_ID = p_equip_id;
+    COMMIT;
+END;</code></pre>
+
+            <h3>5.3 Explicit Cursor for Pending Payment Notifications</h3>
+            <pre><code>DECLARE
+    CURSOR cur_pending IS
+        SELECT p.Payment_ID, m.Member_Name, m.Phone, p.Amount
+        FROM Payment p JOIN Member m ON p.Member_ID = m.Member_ID
+        WHERE p.Payment_Status = 'Pending';
+    v_rec cur_pending%ROWTYPE;
+BEGIN
+    OPEN cur_pending;
+    LOOP
+        FETCH cur_pending INTO v_rec;
+        EXIT WHEN cur_pending%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('Pending Fee Alert: ' || v_rec.Member_Name || ' owes INR ' || v_rec.Amount);
+    END LOOP;
+    CLOSE cur_pending;
+END;</code></pre>
+
+            <h2>6. Frontend Interface & Full CRUD Operations</h2>
+            <p>
+              The front-end user interface connects directly to the backend database via RESTful HTTP APIs. Users can seamlessly create, inspect, update, and remove records across all entities with real-time UI synchronization and relational validation.
+            </p>
+
+            <div style="margin-top: 30px; text-align: center;">
+              <button class="btn btn-primary" onclick="window.print()">
+                <span>🖨️</span> Print / Save Report as PDF
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD / EDIT RECORD -->
+  <div class="modal-overlay" id="crud-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title">Add Record</h3>
+        <button class="modal-close-btn" id="modal-close-x">&times;</button>
+      </div>
+      <form id="crud-form">
+        <div class="modal-body" id="modal-form-fields">
+          <!-- Dynamic form inputs -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="modal-submit-btn">Save Record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DELETE CONFIRMATION -->
+  <div class="modal-overlay" id="delete-modal">
+    <div class="modal-content" style="max-width: 420px;">
+      <div class="modal-header">
+        <h3>Confirm Deletion</h3>
+        <button class="modal-close-btn" onclick="closeDeleteModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+          Are you sure you want to delete this record? This action will permanently remove it from the database.
+        </p>
+        <div style="background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); border-radius: 8px; padding: 12px; margin-top: 10px; color: #fb7185; font-size: 0.85rem;">
+          ⚠️ Associated records with foreign key constraints may also be affected.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btn-confirm-delete">Delete Permanently</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

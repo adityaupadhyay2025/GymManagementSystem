@@ -1,0 +1,23 @@
+{
+  "name": "gym-management-system",
+  "version": "1.0.0",
+  "description": "Gym Management System with SQLite Backend, CRUD Web Interface, and 10 SQL/PLSQL Queries (DA2 DBMS)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node -e \"require('./db.js').seedDatabase()\""
+  },
+  "keywords": [
+    "dbms",
+    "da2",
+    "gym-management-system",
+    "sqlite",
+    "sql",
+    "plsql"
+  ],
+  "author": "Student",
+  "license": "ISC",
+  "dependencies": {
+    "localtunnel": "^2.0.2"
+  }
+}
